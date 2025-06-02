@@ -4,7 +4,10 @@ def call() {
         stages {
             stage('Init') {
                 steps {
+                    
+                    echo "*******************************"
                     echo "Running from shared library!"
+                    echo "*******************************"
                 }
             }
         }
