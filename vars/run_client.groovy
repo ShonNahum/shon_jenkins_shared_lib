@@ -6,7 +6,7 @@ def call() {
                 steps {
 
                     echo "*******************************"
-                    echo "Running from shared library! for Server"
+                    echo "Running from shared library! for client"
                     echo "*******************************"
                 }
             }
