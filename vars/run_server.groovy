@@ -2,6 +2,12 @@ def call() {
     node {
         stage('Checkout') {
             checkout scm
+            sh '''
+            export PATH=$PATH:/usr/bin
+            docker --version
+            docker build -t myimage .
+            '''
+
         }
         stage('Build Docker Image') {
             def imageName = "shonnahum/sm:${env.BUILD_NUMBER}"
