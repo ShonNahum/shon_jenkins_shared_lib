@@ -1,10 +1,10 @@
 def call() {
   pipeline {
     agent {
-        docker {
-        image 'python:3.10' 
-        args '-u root:root' 
-        }
+      docker {
+        image 'python:3.10'
+        args '-u root:root'
+      }
     }
 
     environment {
@@ -27,7 +27,6 @@ def call() {
       stage('Lint') {
         steps {
           script {
-            // call your Linter class
             new sm_smc.ci.Linter(this).run()
           }
         }
@@ -60,8 +59,16 @@ def call() {
 
     post {
       always {
-        echo "Cleaning up..."
-        sh 'docker image prune -f || true'
+        script {
+          node {
+            echo "Cleaning up..."
+            try {
+              sh 'docker image prune -f || true'
+            } catch (err) {
+              echo "Docker prune failed: ${err}"
+            }
+          }
+        }
       }
     }
   }
