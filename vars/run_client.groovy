@@ -4,6 +4,6 @@ def call() {
     imageName: "shonnahum/smc:${env.BUILD_NUMBER}"
   ]
 
-  def pipeline = new sm_smc.ci.logic(this, config)
+  def pipeline = new sm_smc.ci.StructurePipeline(this, config)
   pipeline.run()
 }
