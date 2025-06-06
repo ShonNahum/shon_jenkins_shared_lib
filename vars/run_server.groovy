@@ -1,15 +1,9 @@
 def call() {
-    pipeline {
-        agent any
-        stages {
-            stage('Init') {
-                steps {
+  def config = [
+    appName: "sm",
+    imageName: "shonnahum/sm:${env.BUILD_NUMBER}"
+  ]
 
-                    echo "*******************************"
-                    echo "Running from shared library! for Server"
-                    echo "*******************************"
-                }
-            }
-        }
-    }
+  def pipeline = new sm_smc.ci.logic(this, config)
+  pipeline.run()
 }
