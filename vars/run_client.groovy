@@ -1,63 +1,19 @@
 def call() {
-  pipeline {
-    agent any
-
-    environment {
-      IMAGE_NAME = "shonnahum/smc:${env.BUILD_NUMBER}"
+    node {
+        stage('Checkout') {
+            checkout scm
+        }
+        stage('Build Docker Image') {
+            def imageName = "shonnahum/smc:${env.BUILD_NUMBER}"
+            sh "docker build -t ${imageName} ."
+        }
+        stage('Login to Artifactory') {
+            withCredentials([usernamePassword(credentialsId: 'artifactory-creds-id', usernameVariable: 'ART_USER', passwordVariable: 'ART_PASS')]) {
+                sh "docker login -u $ART_USER -p $ART_PASS "
+            }
+        }
+        stage('Push Docker Image') {
+            sh "docker push ${imageName}"
+        }
     }
-
-    stages {
-      stage('Checkout') {
-        steps {
-          checkout scm
-        }
-      }
-
-      stage('Install Requirements') {
-        steps {
-          sh 'pip install -r requirements.txt'
-        }
-      }
-
-      stage('Lint') {
-        steps {
-          script {
-            // call your Linter class
-            new sm_smc.ci.Linter(this).run()
-          }
-        }
-      }
-
-      stage('Unit Test') {
-        steps {
-          script {
-            new sm_smc.ci.Tester(this).run()
-          }
-        }
-      }
-
-      stage('Build Docker') {
-        steps {
-          script {
-            new sm_smc.ci.DockerHelper(this, env.IMAGE_NAME).build()
-          }
-        }
-      }
-
-      stage('Push Docker') {
-        steps {
-          script {
-            new sm_smc.ci.DockerHelper(this, env.IMAGE_NAME).push()
-          }
-        }
-      }
-    }
-
-    post {
-      always {
-        echo "Cleaning up..."
-        sh 'docker image prune -f || true'
-      }
-    }
-  }
 }
