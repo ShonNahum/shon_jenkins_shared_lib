@@ -1,6 +1,11 @@
 def call() {
   pipeline {
-    agent any
+    agent {
+      docker {
+        image 'python:3.10'
+        args '-u root:root'
+    }
+    }
     environment {
       IMAGE_NAME = "shonnahum/sm:${env.BUILD_NUMBER}"
     }
