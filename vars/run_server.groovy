@@ -1,74 +1,52 @@
-def call() {
-  pipeline {
-    agent {
-      docker {
-        image 'python:3.10'
-        args '-u root:root'
-    }
-    }
-    environment {
-      IMAGE_NAME = "shonnahum/sm:${env.BUILD_NUMBER}"
-    }
+pipeline {
+  agent any
 
-    stages {
-      stage('Checkout') {
-        steps {
-          checkout scm
-        }
-      }
+  environment {
+    IMAGE_NAME = "shonnahum/sm:${env.BUILD_NUMBER}"
+  }
 
-      stage('Install Requirements') {
-        steps {
-          sh 'pip install -r requirements.txt'
-        }
-      }
-
-      stage('Lint') {
-        steps {
-          script {
-            new sm_smc.ci.Linter(this).run()
-          }
-        }
-      }
-
-      stage('Unit Test') {
-        steps {
-          script {
-            new sm_smc.ci.Tester(this).run()
-          }
-        }
-      }
-
-      stage('Build Docker') {
-        steps {
-          script {
-            new sm_smc.ci.DockerHelper(this, env.IMAGE_NAME).build()
-          }
-        }
-      }
-
-      stage('Push Docker') {
-        steps {
-          script {
-            new sm_smc.ci.DockerHelper(this, env.IMAGE_NAME).push()
-          }
-        }
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
       }
     }
 
-    post {
-      always {
+    stage('Install Requirements & Lint & Test') {
+      steps {
+        // Run all python related commands inside a python container with current workspace mounted
         script {
-          node {
-            echo "Cleaning up..."
-            try {
-              sh 'docker image prune -f || true'
-            } catch (err) {
-              echo "Docker prune failed: ${err}"
-            }
+          docker.image('python:3.10').inside('-u root:root') {
+            sh 'pip install --upgrade pip'
+            sh 'pip install -r requirements.txt'
+            sh 'flake8 .'     // Lint example
+            sh 'pytest tests' // Unit test example
           }
         }
       }
+    }
+
+    stage('Build Docker') {
+      steps {
+        script {
+          new sm_smc.ci.DockerHelper(this, env.IMAGE_NAME).build()
+        }
+      }
+    }
+
+    stage('Push Docker') {
+      steps {
+        script {
+          new sm_smc.ci.DockerHelper(this, env.IMAGE_NAME).push()
+        }
+      }
+    }
+  }
+
+  post {
+    always {
+      echo "Cleaning up..."
+      sh 'docker image prune -f || true'
     }
   }
 }
