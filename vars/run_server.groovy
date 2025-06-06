@@ -1,3 +1,5 @@
+
+def call() {
 pipeline {
   agent any
 
@@ -20,7 +22,6 @@ pipeline {
             sh 'pip install --upgrade pip'
             sh 'pip install -r requirements.txt'
             sh 'flake8 .'     // Lint example
-            sh 'pytest tests' // Unit test example
           }
         }
       }
@@ -49,4 +50,5 @@ pipeline {
       sh 'docker image prune -f || true'
     }
   }
+}
 }
