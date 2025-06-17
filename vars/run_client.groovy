@@ -17,10 +17,15 @@ def call() {
                         Messages.checkOut(this)
                     }
                     checkout scm
-
                 }
             }
-
+            stage('Docker Build') {
+                steps {
+                    script {
+                        DockerBuilder.buildAndTag(this)
+                    }
+                }
+            }
         }
     }
 }
