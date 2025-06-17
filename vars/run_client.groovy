@@ -1,4 +1,4 @@
-import sm_smc.ci.Test
+import sm_smc.ci.Messages
 
 def call() {
     pipeline {
@@ -7,7 +7,25 @@ def call() {
             stage('Run Client') {
                 steps {
                     script {
-                        Test.sayHello(this)
+                        Messages.sayHello(this)
+                    }
+                }
+            }
+            stage('Checkout Code') {
+                steps {
+                    checkout scm
+                    script {
+                        Messages.checkOut(this)
+                    }
+                }
+            }
+            stage('Build in Docker') {
+                steps {
+                    script {
+                        docker.image('openjdk:17').inside {
+                            sh 'javac -version'  // Example build command
+                            sh 'ls -la'          // Just to show file visibility
+                        }
                     }
                 }
             }
