@@ -7,6 +7,7 @@ class PyLintRunner implements Serializable {
 
         script.docker.image('python:3.11-slim').inside {
             script.sh '''
+                pip install --no-cache-dir -r requirements.txt
                 pip install pylint > /dev/null
                 echo "Running pylint..."
                 pylint **/*.py --fail-under=10
