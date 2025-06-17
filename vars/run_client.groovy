@@ -36,8 +36,6 @@ def call() {
                                 env.GITHUB_TOKEN
                             )
                             error("❌ Pylint failed. Created PR to ${env.BASE_BRANCH}, stopping pipeline.")
-                        } else {
-                            echo "✅ Pylint passed. Continuing with pipeline."
                         }
                     }
                 }
