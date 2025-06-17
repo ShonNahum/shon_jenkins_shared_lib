@@ -13,8 +13,22 @@ def call() {
             GITHUB_TOKEN = credentials('github-token')
         }
         stages {
+            stage('Check Branch') {
+                steps {
+                    script {
+                        if (env.BRANCH_NAME == 'main') {
+                            echo "Pipeline skipped on main branch."
+                            currentBuild.result = 'NOT_BUILT' 
+                            error("Aborting pipeline on main branch.")
+                        } else {
+                            echo "Running pipeline on branch: ${env.BRANCH_NAME}"
+                        }
+                    }
+                }
+            }
             stage('Checkout Code') {
                 steps {
+                    
                     script {
                         Messages.checkOut(this)
                     }
@@ -27,18 +41,17 @@ def call() {
                         def lintPassed = PyLintRunner.run(this)
                         def repoName = GitHelper.getRepoName(this)
 
-                        if (!lintPassed) {
-                            if (env.BRANCH_NAME != 'main') {
-                                PRHelper.createPullRequest(
-                                    this,
-                                    env.BRANCH_NAME,
-                                    env.BASE_BRANCH,
-                                    repoName,
-                                    env.GITHUB_TOKEN
-                                )
-                                echo "❌ Pylint failed. Created PR to ${env.BASE_BRANCH}."
-                            }
-                            // Always stop pipeline if Pylint fails
+                        if (lintPassed) {
+                            PRHelper.createPullRequest(
+                                this,
+                                env.BRANCH_NAME,
+                                env.BASE_BRANCH,
+                                repoName,
+                                env.GITHUB_TOKEN
+                            )
+                            echo "❌ Pylint Passed. Created PR to ${env.BASE_BRANCH}."
+                        } else {
+                            echo "✅ Pylint Failed."
                             error("❌ Pylint failed. Stopping pipeline.")
                         }
                     }
