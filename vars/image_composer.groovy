@@ -1,5 +1,3 @@
-import sm_smc.ci.DockerBuilder
-
 def call() {
     properties([
         parameters([
@@ -20,8 +18,8 @@ def call() {
             stage('Build & Push Docker') {
                 steps {
                     script {
-                        def image = DockerBuilder.buildImage(this, params.REPO_URL, params.BRANCH_NAME, params.DOCKER_TAG)
-                        DockerBuilder.pushImage(this, image)
+                        def image = sm_smc.ci.DockerBuilder.buildImage(this, params.REPO_URL, params.BRANCH_NAME, params.DOCKER_TAG)
+                        sm_smc.ci.DockerBuilder.pushImage(this, image)
                     }
                 }
             }
