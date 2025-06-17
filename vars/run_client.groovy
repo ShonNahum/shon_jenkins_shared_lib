@@ -1,4 +1,5 @@
 import sm_smc.ci.Messages
+import sm_smc.ci.DockerBuilder
 
 def call() {
     pipeline {
