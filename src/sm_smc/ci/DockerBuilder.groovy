@@ -22,11 +22,23 @@ class DockerBuilder {
     }
 
     static void pushImage(script, String imageFullName) {
-    script.echo "Pushing Docker image: ${imageFullName}"
-    script.sh "docker push ${imageFullName}"
 
-    script.echo "Removing local image: ${imageFullName}"
-    script.sh "docker rmi ${imageFullName} || true"
-}
+        script.withCredentials([
+            script.usernamePassword(
+                credentialsId: 'docker-artifactory-login',
+                usernameVariable: 'USER',
+                passwordVariable: 'PASS'
+            )
+        ]) {
+            script.sh "echo \$PASS | docker login -u \$USER --password-stdin ${registry}"
+        }
+
+        script.echo "Pushing Docker image: ${imageFullName}"
+        script.sh "docker push ${imageFullName}"
+
+        script.echo "Removing local image: ${imageFullName}"
+        script.sh "docker rmi ${imageFullName} || true"
+    }
+
 
 }
