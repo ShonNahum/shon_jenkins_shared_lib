@@ -1,24 +1,33 @@
+import sm_smc.ci.Messages
+import sm_smc.ci.DockerBuilder
+
 def call() {
-    node {
-        def imageName = "shonnahum/sm:${env.BUILD_NUMBER}"
-
-        stage('Checkout') {
-            checkout scm
-        }
-
-        stage('Build Docker Image') {
-            sh 'docker --version'
-            sh "docker build -t ${imageName} ."
-        }
-
-        stage('Login to Artifactory') {
-            withCredentials([usernamePassword(credentialsId: 'artifactory-creds-id', usernameVariable: 'ART_USER', passwordVariable: 'ART_PASS')]) {
-                sh "docker login -u $ART_USER -p $ART_PASS"
+    pipeline {
+        agent any
+        stages {
+            stage('Checkout Code') {
+                steps {
+                    script {
+                        Messages.checkOut(this)
+                    }
+                    checkout scm
+                }
             }
-        }
+            stage('Docker Build') {
+                steps {
+                    script {
+                        env.IMAGE_NAME = DockerBuilder.buildImage(this)
+                    }
+                }
+            }
 
-        stage('Push Docker Image') {
-            sh "docker push ${imageName}"
+            stage('Docker Push') {
+                steps {
+                    script {
+                        DockerBuilder.pushImage(this, env.IMAGE_NAME)
+                    }
+                }
+            }
         }
     }
 }
