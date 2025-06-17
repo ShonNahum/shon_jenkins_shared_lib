@@ -1,7 +1,10 @@
 def call() {
     properties([
         parameters([
-            string(name: 'REPO_URL', description: 'Git repo'),
+            choice(name: 'REPO_URL', choices: [
+                'git@github.com:ShonNahum/SM.git',
+                'git@github.com:ShonNahum/SMC.git'
+            ], description: 'Select the repository'),
             string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'Branch'),
             string(name: 'DOCKER_TAG', defaultValue: 'latest', description: 'Docker image tag')
         ])
