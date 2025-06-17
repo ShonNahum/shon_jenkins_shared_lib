@@ -19,7 +19,7 @@ def call() {
                         if (env.BRANCH_NAME == 'main') {
                             echo "Pipeline skipped on main branch."
                             currentBuild.result = 'NOT_BUILT' 
-                            error("Aborting pipeline on main branch.")
+                            error("Aborting pipeline on main branch. - Building on main Branch ARE not allowed")
                         } else {
                             echo "Running pipeline on branch: ${env.BRANCH_NAME}"
                         }
