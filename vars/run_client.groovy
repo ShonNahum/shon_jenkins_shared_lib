@@ -7,7 +7,7 @@ def call() {
             stage('Run Client') {
                 steps {
                     script {
-                        Messages.sayHello(this)
+                        Messages.start(this)
                     }
                 }
             }

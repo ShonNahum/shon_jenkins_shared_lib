@@ -1,7 +1,7 @@
 package sm_smc.ci
 
 class Messages {
-    static void sayHello(script) {
+    static void start(script) {
         script.echo "***************" Starting CI ***************" "
     }
     static void checkOut(script) {
