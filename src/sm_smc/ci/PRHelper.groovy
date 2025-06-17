@@ -7,7 +7,7 @@ class PRHelper {
           "title": "Fix: ${source} → ${target}",
           "head": "${source}",
           "base": "${target}",
-          "body": "Auto-created PR due to lint failure"
+          "body": "Auto-created PR due succssfully PyLint"
         }
         """.stripIndent().trim()
 

@@ -9,7 +9,6 @@ def call() {
         agent any
         environment {
             BASE_BRANCH = "main"
-            GITHUB_REPO = "ShonNahum/SMC"
             GITHUB_TOKEN = credentials('github-token')
         }
         stages {
@@ -49,29 +48,29 @@ def call() {
                                 repoName,
                                 env.GITHUB_TOKEN
                             )
-                            echo "❌ Pylint Passed. Created PR to ${env.BASE_BRANCH}."
+                            echo "✅ Pylint Passed. Created PR to ${env.BASE_BRANCH}."
                         } else {
-                            echo "✅ Pylint Failed."
-                            error("❌ Pylint failed. Stopping pipeline. - Get Better Pylint Rate please")
+                            echo "❌ Pylint Failed."
+                            error("❌ Pylint failed. Stopping pipeline. - Get A better Pylint Rate please")
                         }
                     }
                 }
             }
-            stage('Docker Build') {
-                steps {
-                    script {
-                        env.IMAGE_NAME = DockerBuilder.buildImage(this)
-                    }
-                }
-            }
+            // stage('Docker Build') {
+            //     steps {
+            //         script {
+            //             env.IMAGE_NAME = DockerBuilder.buildImage(this)
+            //         }
+            //     }
+            // }
 
-            stage('Docker Push') {
-                steps {
-                    script {
-                        DockerBuilder.pushImage(this, env.IMAGE_NAME)
-                    }
-                }
-            }
+            // stage('Docker Push') {
+            //     steps {
+            //         script {
+            //             DockerBuilder.pushImage(this, env.IMAGE_NAME)
+            //         }
+            //     }
+            // }
         }
     }
 }
