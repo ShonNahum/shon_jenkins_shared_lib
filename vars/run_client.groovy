@@ -1,5 +1,6 @@
 import sm_smc.ci.Messages
 import sm_smc.ci.DockerBuilder
+import sm_smc.ci.PyLintRunner
 
 def call() {
     pipeline {
@@ -11,6 +12,13 @@ def call() {
                         Messages.checkOut(this)
                     }
                     checkout scm
+                }
+            }
+            stage('Running PyLint') {
+                steps {
+                    script {
+                        PyLintRunner.run(this)
+                    }
                 }
             }
             stage('Docker Build') {
