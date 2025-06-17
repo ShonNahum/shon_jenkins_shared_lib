@@ -1,29 +1,28 @@
-package sm_smc.ci
+package sm_smc
 
 class DockerBuilder {
-    static void buildAndTag(script) {
-        // Get repo name from SCM URL
+    static String buildImage(script) {
         def repoUrl = script.scm?.userRemoteConfigs?.getAt(0)?.url ?: 'unknown'
-        def repoName = repoUrl.tokenize('/').last().replace('.git', '')
-        script.echo "Repo name: ${repoName}"
+        def repoName = repoUrl.tokenize('/').last().replace('.git', '').toLowerCase()
 
-        // Version tracking (fallback: 1)
         def versionFile = 'version.txt'
         def tag = 1
-
         if (script.fileExists(versionFile)) {
             tag = script.readFile(versionFile).trim().toInteger() + 1
         }
-
-        // Save the new version
         script.writeFile(file: versionFile, text: tag.toString())
 
-        // Build Docker image
-        def imageTag = "${repoName}:${tag}"
-        script.echo "Building Docker image: ${imageTag}"
+        def registry = 'shonnahum'
+        def imageFullName = "${registry}/${repoName}:${tag}"
 
-        script.sh "docker build -t ${imageTag} ."
+        script.echo "Building Docker image: ${imageFullName}"
+        script.sh "docker build -t ${imageFullName} ."
 
-        // Optional: push to registry here
+        return imageFullName  // Pass to push step
+    }
+
+    static void pushImage(script, String imageFullName) {
+        script.echo "Pushing Docker image: ${imageFullName}"
+        script.sh "docker push ${imageFullName}"
     }
 }
