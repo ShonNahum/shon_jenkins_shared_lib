@@ -1,4 +1,5 @@
-sm_smc.ci.DockerBuilder
+import sm_smc.ci.DockerBuilder
+
 def call() {
     properties([
         parameters([
