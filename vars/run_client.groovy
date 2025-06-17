@@ -2,6 +2,7 @@ import sm_smc.ci.Messages
 import sm_smc.ci.DockerBuilder
 import sm_smc.ci.PyLintRunner
 import sm_smc.ci.PRHelper
+import sm_smc.ci.GitHelper
 
 def call() {
     pipeline {
