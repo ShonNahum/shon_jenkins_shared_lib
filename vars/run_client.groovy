@@ -13,22 +13,14 @@ def call() {
             }
             stage('Checkout Code') {
                 steps {
-                    checkout scm
                     script {
                         Messages.checkOut(this)
                     }
+                    checkout scm
+
                 }
             }
-            stage('Build in Docker') {
-                steps {
-                    script {
-                        docker.image('openjdk:17').inside {
-                            sh 'javac -version'  // Example build command
-                            sh 'ls -la'          // Just to show file visibility
-                        }
-                    }
-                }
-            }
+
         }
     }
 }
