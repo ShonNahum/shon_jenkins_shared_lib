@@ -30,7 +30,7 @@ class DockerBuilder {
                 passwordVariable: 'PASS'
             )
         ]) {
-            script.sh "echo \$PASS | docker login -u \$USER --password-stdin ${registry}"
+            script.sh "echo \$PASS | docker login -u \$USER --password-stdin"
         }
 
         script.echo "Pushing Docker image: ${imageFullName}"
