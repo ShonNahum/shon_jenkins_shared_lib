@@ -21,21 +21,25 @@ def call() {
                     checkout scm
                 }
             }
-            stage('Run Pylint') {
+            stage('Run Pylint & Pull Request If needed') {
                 steps {
                     script {
                         def lintPassed = PyLintRunner.run(this)
                         def repoName = GitHelper.getRepoName(this)
 
-                        if (!lintPassed && env.BRANCH_NAME != 'main') {
-                            PRHelper.createPullRequest(
-                                this,
-                                env.BRANCH_NAME,
-                                env.BASE_BRANCH,
-                                repoName,
-                                env.GITHUB_TOKEN
-                            )
-                            error("❌ Pylint failed. Created PR to ${env.BASE_BRANCH}, stopping pipeline.")
+                        if (!lintPassed) {
+                            if (env.BRANCH_NAME != 'main') {
+                                PRHelper.createPullRequest(
+                                    this,
+                                    env.BRANCH_NAME,
+                                    env.BASE_BRANCH,
+                                    repoName,
+                                    env.GITHUB_TOKEN
+                                )
+                                echo "❌ Pylint failed. Created PR to ${env.BASE_BRANCH}."
+                            }
+                            // Always stop pipeline if Pylint fails
+                            error("❌ Pylint failed. Stopping pipeline.")
                         }
                     }
                 }
