@@ -22,7 +22,11 @@ class DockerBuilder {
     }
 
     static void pushImage(script, String imageFullName) {
-        script.echo "Pushing Docker image: ${imageFullName}"
-        script.sh "docker push ${imageFullName}"
-    }
+    script.echo "Pushing Docker image: ${imageFullName}"
+    script.sh "docker push ${imageFullName}"
+
+    script.echo "Removing local image: ${imageFullName}"
+    script.sh "docker rmi ${imageFullName} || true"
+}
+
 }

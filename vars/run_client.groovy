@@ -28,13 +28,13 @@ def call() {
                 }
             }
 
-            // stage('Docker Push') {
-            //     steps {
-            //         script {
-            //             DockerBuilder.pushImage(this, env.IMAGE_NAME)
-            //         }
-            //     }
-            // }
+            stage('Docker Push') {
+                steps {
+                    script {
+                        DockerBuilder.pushImage(this, env.IMAGE_NAME)
+                    }
+                }
+            }
         }
     }
 }
