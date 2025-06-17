@@ -7,7 +7,7 @@ def call() {
             stage('Run Client') {
                 steps {
                     script {
-                        Test.sayHello()
+                        Test.sayHello(this)
                     }
                 }
             }

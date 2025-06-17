@@ -1,7 +1,7 @@
 package sm_smc.ci
 
 class Test {
-    static void sayHello() {
-        println "Hello from test class!"
+    static void sayHello(script) {
+        script.echo "Hello from Test class via shared lib"
     }
 }
