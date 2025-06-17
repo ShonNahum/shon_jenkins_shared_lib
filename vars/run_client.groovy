@@ -52,7 +52,7 @@ def call() {
                             echo "❌ Pylint Passed. Created PR to ${env.BASE_BRANCH}."
                         } else {
                             echo "✅ Pylint Failed."
-                            error("❌ Pylint failed. Stopping pipeline.")
+                            error("❌ Pylint failed. Stopping pipeline. - Get Better Pylint Rate please")
                         }
                     }
                 }

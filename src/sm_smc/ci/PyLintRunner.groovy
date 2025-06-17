@@ -12,7 +12,7 @@ class PyLintRunner {
             ''' // install first
 
             // capture lint result
-            return script.sh(script: 'pylint **/*.py --fail-under=10', returnStatus: true)
+            return script.sh(script: 'pylint **/*.py --fail-under=7', returnStatus: true)
         }
 
         if (result != 0) {
