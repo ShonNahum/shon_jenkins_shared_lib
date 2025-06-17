@@ -1,4 +1,4 @@
-package sm_smc
+package sm_smc.ci
 
 class DockerBuilder {
     static String buildImage(script) {
