@@ -1,10 +1,16 @@
 import sm_smc.ci.Messages
 import sm_smc.ci.DockerBuilder
 import sm_smc.ci.PyLintRunner
+import sm_smc.ci.PRHelper
 
 def call() {
     pipeline {
         agent any
+        environment {
+            BASE_BRANCH = "main"
+            GITHUB_REPO = "ShonNahum/SMC"
+            GITHUB_TOKEN = credentials('github-token')
+        }
         stages {
             stage('Checkout Code') {
                 steps {
@@ -14,10 +20,24 @@ def call() {
                     checkout scm
                 }
             }
-            stage('Running PyLint') {
+            stage('Run Pylint') {
                 steps {
                     script {
-                        PyLintRunner.run(this)
+                        def lintPassed = PyLintRunner.run(this)
+                        def repoName = GitHelper.getRepoName(this)
+
+                        if (!lintPassed && env.BRANCH_NAME != 'main') {
+                            PRHelper.createPullRequest(
+                                this,
+                                env.BRANCH_NAME,
+                                env.BASE_BRANCH,
+                                repoName,
+                                env.GITHUB_TOKEN
+                            )
+                            error("❌ Pylint failed. Created PR to ${env.BASE_BRANCH}, stopping pipeline.")
+                        } else {
+                            echo "✅ Pylint passed. Continuing with pipeline."
+                        }
                     }
                 }
             }
