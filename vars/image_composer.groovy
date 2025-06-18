@@ -1,76 +1,78 @@
-def repos = [
-    SM : 'git@github.com:ShonNahum/SM.git',
-    SMC: 'git@github.com:ShonNahum/SMC.git'
-]
+def call() {
+    def repos = [
+        SM : 'git@github.com:ShonNahum/SM.git',
+        SMC: 'git@github.com:ShonNahum/SMC.git'
+    ]
 
-properties([
-    parameters([
-        choice(name: 'REPO_URL', choices: [
-            'git@github.com:ShonNahum/SM.git',
-            'git@github.com:ShonNahum/SMC.git'
-        ], description: 'Select the repository'),
-        string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'Branch'),
-        string(name: 'DOCKER_TAG', defaultValue: 'latest', description: 'Docker image tag'),
-        booleanParam(name: 'RUN_BOTH_REPOS', defaultValue: false, description: 'Run for both SM and SMC in parallel')
+    properties([
+        parameters([
+            choice(name: 'REPO_URL', choices: [
+                'git@github.com:ShonNahum/SM.git',
+                'git@github.com:ShonNahum/SMC.git'
+            ], description: 'Select the repository'),
+            string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'Branch name to build'),
+            string(name: 'DOCKER_TAG', defaultValue: 'latest', description: 'Docker image tag'),
+            booleanParam(name: 'RUN_BOTH_REPOS', defaultValue: false, description: 'Run for both SM and SMC in parallel')
+        ])
     ])
-])
 
-pipeline {
-    agent any
+    pipeline {
+        agent any
 
-    stages {
-        stage('Checkout') {
-            steps {
-                script {
-                    if (params.RUN_BOTH_REPOS) {
-                        parallel(
-                            SM: {
-                                checkoutRepo(repos.SM, 'SM')
-                            },
-                            SMC: {
-                                checkoutRepo(repos.SMC, 'SMC')
-                            }
-                        )
-                    } else {
-                        checkoutRepo(params.REPO_URL, getRepoName(params.REPO_URL))
+        stages {
+            stage('Checkout') {
+                steps {
+                    script {
+                        if (params.RUN_BOTH_REPOS) {
+                            parallel(
+                                SM: {
+                                    checkoutRepo(repos.SM, 'SM')
+                                },
+                                SMC: {
+                                    checkoutRepo(repos.SMC, 'SMC')
+                                }
+                            )
+                        } else {
+                            checkoutRepo(params.REPO_URL, getRepoName(params.REPO_URL))
+                        }
                     }
                 }
             }
-        }
 
-        stage('Build Docker') {
-            steps {
-                script {
-                    if (params.RUN_BOTH_REPOS) {
-                        parallel(
-                            SM: {
-                                buildImage(repos.SM, 'SM')
-                            },
-                            SMC: {
-                                buildImage(repos.SMC, 'SMC')
-                            }
-                        )
-                    } else {
-                        buildImage(params.REPO_URL, getRepoName(params.REPO_URL))
+            stage('Build Docker') {
+                steps {
+                    script {
+                        if (params.RUN_BOTH_REPOS) {
+                            parallel(
+                                SM: {
+                                    buildImage(repos.SM, 'SM')
+                                },
+                                SMC: {
+                                    buildImage(repos.SMC, 'SMC')
+                                }
+                            )
+                        } else {
+                            buildImage(params.REPO_URL, getRepoName(params.REPO_URL))
+                        }
                     }
                 }
             }
-        }
 
-        stage('Push Docker') {
-            steps {
-                script {
-                    if (params.RUN_BOTH_REPOS) {
-                        parallel(
-                            SM: {
-                                pushImage(repos.SM, 'SM')
-                            },
-                            SMC: {
-                                pushImage(repos.SMC, 'SMC')
-                            }
-                        )
-                    } else {
-                        pushImage(params.REPO_URL, getRepoName(params.REPO_URL))
+            stage('Push Docker') {
+                steps {
+                    script {
+                        if (params.RUN_BOTH_REPOS) {
+                            parallel(
+                                SM: {
+                                    pushImage('SM')
+                                },
+                                SMC: {
+                                    pushImage('SMC')
+                                }
+                            )
+                        } else {
+                            pushImage(getRepoName(params.REPO_URL))
+                        }
                     }
                 }
             }
@@ -96,7 +98,7 @@ def buildImage(repoUrl, repoName) {
     }
 }
 
-def pushImage(repoUrl, repoName) {
+def pushImage(repoName) {
     dir(repoName) {
         def image = "shonnahum/${repoName.toLowerCase()}:${params.DOCKER_TAG}"
         sm_smc.ci.DockerBuilder.pushImage(this, image)
