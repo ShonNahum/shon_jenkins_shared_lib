@@ -31,20 +31,12 @@ def call() {
 
                         // Read the file
                         def text = readFile valuesFile
-
-                        def smTag = params.SM_TAG.toString()
-                        def smcTag = params.SMC_TAG.toString()
-
-                        echo "sm is:\n${smTag}"
                         
-                        // Replace sm and smc tags in YAML file text
-                        text = text.replaceAll(/(sm:\s*\n(?:\s+.*\n)*?\s+tag:\s*)v0\.0\.0/) { fullMatch, group1 ->
-                            return group1 + smTag
-                        }
+                        // Replace {tag} inside image for sm
+                        text = text.replaceAll(/(sm:\s*\n\s+image:\s+shonnahum\/sm:)\{tag\}/, "\$1${params.SM_TAG}")
 
-                        text = text.replaceAll(/(smc:\s*\n(?:\s+.*\n)*?\s+tag:\s*)v0\.0\.0/) { fullMatch, group1 ->
-                            return group1 + smcTag
-                        }
+                        // Replace {tag} inside image for smc
+                        text = text.replaceAll(/(smc:\s*\n\s+image:\s+shonnahum\/smc:)\{tag\}/, "\$1${params.SMC_TAG}")
 
                         echo "Updated YAML:\n${text}"
                         // Write back updated file
