@@ -33,10 +33,12 @@ def call() {
                         def text = readFile valuesFile
 
                         // Replace smc tag
-                        text = text.replaceAll(/(sm:\s*\n(?:\s+.*\n)*?\s+tag:\s*)v0\.0\.0/, "\$1${params.SM_TAG}")
+                        text = text.replaceAll(/(sm:\s*\n(?:\s+.*\n)*?\s+tag:\s*)v0\.0\.0/, "\$1" + params.SM_TAG.toString())
+
 
                         // Replace smc tag
-                        text = text.replaceAll(/(smc:\s*\n(?:\s+.*\n)*?\s+tag:\s*)v0\.0\.0/, "\$1${params.SMC_TAG}")
+                        text = text.replaceAll(/(smc:\s*\n(?:\s+.*\n)*?\s+tag:\s*)v0\.0\.0/, "\$1" + params.SMC_TAG.toString())
+
 
                         echo "Updated YAML:\n${text}"
                         // Write back updated file
