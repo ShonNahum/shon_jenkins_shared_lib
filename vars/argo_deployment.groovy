@@ -33,10 +33,10 @@ def call() {
                         def text = readFile valuesFile
 
                         // Replace image tags
-                        text = text.replaceAll(/(sm:\s*\n(?:\s+.*\n)*?\s+tag:\s*)v0\.0\.0/, "\$1v1.2.3")
+                        text = text.replaceAll(/(sm:\s*\n(?:\s+.*\n)*?\s+tag:\s*)v0\.0\.0/, "\${params.SM_TAG}")
 
                         // Replace smc.tag
-                        text = text.replaceAll(/(smc:\s*\n(?:\s+.*\n)*?\s+tag:\s*)v0\.0\.0/, "\$1v1.2.3")                        echo "Content of file:\n${text}"
+                        text = text.replaceAll(/(smc:\s*\n(?:\s+.*\n)*?\s+tag:\s*)v0\.0\.0/, "\${params.SMC_TAG}")
                         // Write back updated file
                         writeFile file: valuesFile, text: text
 
