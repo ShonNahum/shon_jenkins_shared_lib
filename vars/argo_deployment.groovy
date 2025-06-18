@@ -33,10 +33,10 @@ def call() {
                         def text = readFile valuesFile
                         
                         // Replace {tag} inside image for sm
-                        text = text.replaceAll(/(sm:\s*\n\s+image:\s+shonnahum\/sm:)\{tag\}/, "\$1${params.SM_TAG}")
+                        text = text.replaceAll(/(sm:\s*\n(?:\s+.+\n)*?\s+tag:\s*)\d+/, "\$1${params.SM_TAG}")
 
                         // Replace {tag} inside image for smc
-                        text = text.replaceAll(/(smc:\s*\n\s+image:\s+shonnahum\/smc:)\{tag\}/, "\$1${params.SMC_TAG}")
+                        text = text.replaceAll(/(smc:\s*\n(?:\s+.+\n)*?\s+tag:\s*)\d+/, "\$1${params.SMC_TAG}")
 
                         echo "Updated YAML:\n${text}"
                         // Write back updated file
