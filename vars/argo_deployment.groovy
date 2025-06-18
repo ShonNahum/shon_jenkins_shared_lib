@@ -1,8 +1,8 @@
 def call() {
     properties([
         parameters([
-            string(name: 'SM_TAG', defaultValue: 'latest', description: 'Tag version for SM image'),
-            string(name: 'SMC_TAG', defaultValue: 'latest', description: 'Tag version for SMC image')
+            string(name: 'SM_TAG', defaultValue: 'Unknow', description: 'Tag version for SM image'),
+            string(name: 'SMC_TAG', defaultValue: 'Unknow', description: 'Tag version for SMC image')
         ])
     ])
 
@@ -32,11 +32,12 @@ def call() {
                         // Read the file
                         def text = readFile valuesFile
 
-                        // Replace image tags
+                        // Replace smc tag
                         text = text.replaceAll(/(sm:\s*\n(?:\s+.*\n)*?\s+tag:\s*)v0\.0\.0/, "\$1${params.SM_TAG}")
 
-                        // Replace smc.tag
+                        // Replace smc tag
                         text = text.replaceAll(/(smc:\s*\n(?:\s+.*\n)*?\s+tag:\s*)v0\.0\.0/, "\$1${params.SMC_TAG}")
+
                         echo "Updated YAML:\n${text}"
                         // Write back updated file
                         writeFile file: valuesFile, text: text
